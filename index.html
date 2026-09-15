@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 有感情的记账簿</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --success-color: #51cf66;
+            --warning-color: #ffd93d;
+            --info-color: #6bcfff;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        /* 情感区域 */
+        .emotion-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .emotion-avatar {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .emotion-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .emotion-bubble {
+            min-height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        /* 信任度指示器 */
+        .trust-indicator {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 12px;
+            font-size: 12px;
+        }
+
+        .trust-phase {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .trust-bars {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .trust-bar, .honesty-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .trust-fill {
+            height: 100%;
+            background: #51cf66;
+            transition: width 0.3s ease;
+        }
+
+        .honesty-fill {
+            height: 100%;
+            background: #ffd93d;
+            transition: width 0.3s ease;
+        }
+
+        .trust-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+        }
+
+        /* 统计信息 */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 25px;
+            background: var(--light-color);
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--primary-color);
+        }
+
+        .stat-box.income {
+            border-top-color: var(--success-color);
+        }
+
+        .stat-box.expense {
+            border-top-color: var(--primary-color);
+        }
+
+        .stat-box.balance {
+            border-top-color: var(--info-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+
+        /* 表单区域 */
+        .form-section {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--light-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        /* 按钮 */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-income {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+        }
+
+        .btn-income:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(81, 207, 102, 0.3);
+        }
+
+        .btn-expense {
+            background: linear-gradient(135deg, #ff6b6b 0%, #f03e3e 100%);
+        }
+
+        .btn-expense:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background: none;
+            border: 1px solid #e9ecef;
+            color: #868e96;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear:hover {
+            background: #f8f9fa;
+            color: var(--dark-color);
+        }
+
+        /* 记录区域 */
+        .records-section {
+            padding: 25px;
+            background: var(--light-color);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            color: var(--dark-color);
+        }
+
+        .records-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .record-item.income {
+            border-left-color: var(--success-color);
+        }
+
+        .record-item.expense {
+            border-left-color: var(--primary-color);
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-time {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        .record-category {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 3px;
+        }
+
+        .record-reason {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+
+        .record-amount {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .record-amount.income {
+            color: var(--success-color);
+        }
+
+        .record-amount.income::before {
+            content: '+ ';
+        }
+
+        .record-amount.expense {
+            color: var(--primary-color);
+        }
+
+        .record-amount.expense::before {
+            content: '- ';
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .emotion-avatar {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 情感区域 -->
+        <div class="emotion-section">
+            <div class="emotion-avatar" id="emotionAvatar">😊</div>
+            <p class="emotion-text" id="emotionText">准备好管理您的财务了吗？</p>
+            <div class="emotion-bubble" id="emotionBubble"></div>
+            <div class="trust-indicator" id="trustIndicator"></div>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="stats-section">
+            <div class="stat-box income">
+                <div class="stat-label">💚 总收入</div>
+                <div class="stat-value" id="totalIncome">¥0.00</div>
+            </div>
+            <div class="stat-box expense">
+                <div class="stat-label">❤️ 总支出</div>
+                <div class="stat-value" id="totalExpense">¥0.00</div>
+            </div>
+            <div class="stat-box balance">
+                <div class="stat-label">💙 结余</div>
+                <div class="stat-value" id="balance">¥0.00</div>
+            </div>
+        </div>
+
+        <!-- 输入表单 -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="amount">金额 (¥)</label>
+                <input type="number" id="amount" placeholder="请输入金额" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="category">分类</label>
+                <select id="category">
+                    <optgroup label="收入">
+                        <option value="salary">工资</option>
+                        <option value="bonus">奖金</option>
+                        <option value="investment">投资收益</option>
+                        <option value="other_income">其他收入</option>
+                    </optgroup>
+                    <optgroup label="支出">
+                        <option value="food">饮食</option>
+                        <option value="transport">交通</option>
+                        <option value="shopping">购物</option>
+                        <option value="entertainment">娱乐</option>
+                        <option value="utilities">生活用品</option>
+                        <option value="other_expense">其他支出</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="reason">原因/说明</label>
+                <input type="text" id="reason" placeholder="可选：说明理由">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-income" id="btnIncome">💚 存 钱</button>
+                <button class="btn btn-expense" id="btnExpense">❤️ 支 出</button>
+            </div>
+        </div>
+
+        <!-- 记录列表 -->
+        <div class="records-section">
+            <div class="section-header">
+                <h2>📝 记账记录</h2>
+                <button class="btn-clear" id="btnClear">🗑️ 清空记录</button>
+            </div>
+            <div class="records-list" id="recordsList">
+                <div class="empty-state">还没有任何记录，开始记账吧！</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ 情感系统 ============
+        class EmotionSystem {
+            constructor() {
+                this.emotionState = 'happy';
+                this.mood = 100;
+                this.trustLevel = 100;
+                this.honestyScore = 100;
+                this.suspiciousCount = 0;
+                this.isAngry = false;
+                this.angerTimer = null;
+                this.loadTrustData();
+            }
+
+            loadTrustData() {
+                const saved = localStorage.getItem('emotion_trust_data');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.trustLevel = data.trustLevel || 100;
+                    this.honestyScore = data.honestyScore || 100;
+                    this.suspiciousCount = data.suspiciousCount || 0;
+                    this.mood = data.mood || 100;
+                }
+            }
+
+            saveTrustData() {
+                localStorage.setItem('emotion_trust_data', JSON.stringify({
+                    trustLevel: this.trustLevel,
+                    honestyScore: this.honestyScore,
+                    suspiciousCount: this.suspiciousCount,
+                    mood: this.mood
+                }));
+            }
+
+            getTrustPhase() {
+                if (this.trustLevel >= 80) {
+                    return { phase: 1, name: '天真信任期', emoji: '😊', description: '我完全相信你！' };
+                } else if (this.trustLevel >= 60) {
+                    return { phase: 2, name: '思考期', emoji: '🤔', description: '我开始想了想...' };
+                } else if (this.trustLevel >= 40) {
+                    return { phase: 3, name: '怀疑期', emoji: '😕', description: '我有点不太相信你...' };
+                } else if (this.trustLevel >= 20) {
+                    return { phase: 4, name: '失望期', emoji: '😢', description: '我真的很失望...' };
+                } else {
+                    return { phase: 5, name: '心碎期', emoji: '💔', description: '我们需要重新开始...' };
+                }
+            }
+
+            getEmoji() {
+                const emojis = {
+                    happy: '😊',
+                    proud: '😌',
+                    grateful: '🥰',
+                    angry: '😤',
+                    sad: '😢',
+                    forgiving: '🤝',
+                    excited: '🎉',
+                    suspicious: '🤨',
+                    heartbroken: '💔',
+                    trusting: '✨'
+                };
+                return emojis[this.emotionState] || '😊';
+            }
+
+            reactToIncome(amount, totalIncome) {
+                if (amount <= 0) {
+                    return {
+                        avatar: '😕',
+                        message: '嗯...这不是存钱呢',
+                        bubble: '你确定这是存钱吗？'
+                    };
+                }
+
+                const phase = this.getTrustPhase();
+                const reactions = {
+                    1: [
+                        { message: '🎉 太棒了！', bubble: '你真是个理财小能手！我完全相信你的每一笔记录！' },
+                        { message: '😊 不错呢！', bubble: '存钱的好习惯，我很欣赏！继续加油！' },
+                        { message: '⭐ 很棒！', bubble: '你的理财意识真的很强！我为你骄傲！' }
+                    ],
+                    2: [
+                        { message: '😌 好的', bubble: '这笔存钱看起来还不错...应该是真的吧？' },
+                        { message: '🤔 嗯...', bubble: '存钱是好事，不过这个数字...算了，我相信你！' },
+                        { message: '👍 还可以', bubble: '继续这样存钱，但我会多留意一下。' }
+                    ],
+                    3: [
+                        { message: '😕 存钱？', bubble: '你说存钱就存钱？我有点不太相信了...你能证明吗？' },
+                        { message: '🤨 嗯？', bubble: '这真的存到银行了？还是只是记录一下？' },
+                        { message: '😐 我在想...', bubble: '这次存钱是真的吗？我需要更多证据。' }
+                    ],
+                    4: [
+                        { message: '😢 又来？', bubble: '说实话，我已经不太相信你的记录了...你能不能诚实一点？' },
+                        { message: '💭 真的吗？', bubble: '我对你很失望。这些记录...真的都是真实的吗？' },
+                        { message: '😔 我累了', bubble: '每次都是存钱，但我从没看到你真正为这些记录付出行动。' }
+                    ],
+                    5: [
+                        { message: '💔 我们分手吧', bubble: '我再也不相信你了。除非你用行动证明你的诚实。' },
+                        { message: '😞 结束了', bubble: '我们的信任已经破裂了。我需要很久才能原谅你。' },
+                        { message: '🚫 别说了', bubble: '我不想再听你的记录了。你对我造成了伤害。' }
+                    ]
+                };
+
+                const phaseReactions = reactions[phase.phase];
+                const reaction = phaseReactions[Math.floor(Math.random() * phaseReactions.length)];
+                
+                this.mood = Math.min(100, this.mood + (phase.phase === 1 ? 15 : 5));
+                this.trustLevel = Math.min(100, this.trustLevel + 2);
+                this.clearAnger();
+                this.saveTrustData();
+
+                return {
+                    avatar: this.getEmoji(),
+                    message: reaction.message,
+                    bubble: reaction.bubble
+                };
+            }
+
+            reactToExpense(amount, category, reason, totalExpense, totalIncome) {
+                if (amount <= 0) {
+                    return {
+                        avatar: '😕',
+                        message: '嗯？',
+                        bubble: '这不像是真的支出...'
+                    };
+                }
+
+                const reasonableness = this.judgeExpense(amount, category, reason, totalExpense, totalIncome);
+                const phase = this.getTrustPhase();
+
+                if (reasonableness.isReasonable) {
+                    const reactions = {
+                        1: { message: '👍 可以', bubble: '这个支出看起来很合理，我支持你！好好生活！' },
+                        2: { message: '😌 还好', bubble: '这个消费还算合理吧...我相信你的判断。' },
+                        3: { message: '😕 合理？', bubble: '嗯...这勉强还算合理。不过我在监视你。' },
+                        4: { message: '😢 又来', bubble: '我已经不相信你的记录了，但这次...算了，我闭嘴。' },
+                        5: { message: '💔 随便', bubble: '无论怎样，我都不再相信你了。' }
+                    };
+
+                    const reaction = reactions[phase.phase];
+                    this.emotionState = 'happy';
+                    this.mood = Math.min(100, this.mood + 5);
+                    this.clearAnger();
+                    this.saveTrustData();
+
+                    return {
+                        avatar: this.getEmoji(),
+                        message: reaction.message,
+                        bubble: reaction.bubble
+                    };
+                } else {
+                    return this.handleSuspiciousExpense(amount, reasonableness, phase);
+                }
+            }
+
+            handleSuspiciousExpense(amount, reasonableness, phase) {
+                this.suspiciousCount++;
+                const isFakeExpense = this.detectFakeRecord(phase.phase, this.suspiciousCount);
+
+                if (isFakeExpense) {
+                    this.trustLevel = Math.max(0, this.trustLevel - 20);
+                    this.honestyScore = Math.max(0, this.honestyScore - 15);
+                    this.emotionState = 'heartbroken';
+                    this.isAngry = true;
+                    this.mood = Math.max(20, this.mood - 50);
+
+                    const messages = [
+                        {
+                            message: '💔 你在骗我！',
+                            bubble: `这根本不是真实的支出！你在记录虚假账目来欺骗我！\n\n(我感到被背叛了...我们的信任就这样被摧毁了)\n\n诚实度: ${Math.round(this.honestyScore)}%\n信任度: ${Math.round(this.trustLevel)}%`
+                        },
+                        {
+                            message: '😢 我知道了',
+                            bubble: `我明白了，你根本不是真的在记账。你只是在玩我。\n\n我真的很失望。\n\n诚实度: ${Math.round(this.honestyScore)}%\n信任度: ${Math.round(this.trustLevel)}%`
+                        }
+                    ];
+
+                    const msg = messages[Math.floor(Math.random() * messages.length)];
+                    this.saveTrustData();
+                    return {
+                        avatar: '💔',
+                        message: msg.message,
+                        bubble: msg.bubble
+                    };
+                } else {
+                    const reactions = {
+                        1: { message: '😤 不合理！', bubble: '这个支出有点不合理呢...但我相信你有你的理由！' },
+                        2: { message: '😕 嗯...', bubble: '这个支出...不太理性。我有点担心你。' },
+                        3: { message: '🤨 真的？', bubble: '又是这样？我开始怀疑你的记录真实性了。' },
+                        4: { message: '😔 又来', bubble: '我已经不相信你的任何记录了。这怎么可能是真的？' },
+                        5: { message: '💔 走开', bubble: '别再骗我了。' }
+                    };
+
+                    const reaction = reactions[phase.phase];
+                    this.emotionState = 'angry';
+                    this.mood = Math.max(20, this.mood - 20);
+                    this.trustLevel = Math.max(0, this.trustLevel - 8);
+                    
+                    this.isAngry = true;
+                    if (this.angerTimer) clearTimeout(this.angerTimer);
+                    this.angerTimer = setTimeout(() => {
+                        if (phase.phase <= 2) {
+                            this.forgive();
+                        }
+                    }, 3000);
+
+                    this.saveTrustData();
+                    return {
+                        avatar: '😤',
+                        message: reaction.message,
+                        bubble: reaction.bubble
+                    };
+                }
+            }
+
+            detectFakeRecord(trustPhase, suspiciousCount) {
+                const fakeThresholds = {
+                    1: 0.1,
+                    2: 0.3,
+                    3: 0.6,
+                    4: 0.8,
+                    5: 1.0
+                };
+
+                const threshold = fakeThresholds[trustPhase];
+                return Math.random() < threshold;
+            }
+
+            judgeExpense(amount, category, reason, totalExpense, totalIncome) {
+                const expenseRatio = totalIncome > 0 ? totalExpense / totalIncome : 0;
+
+                const unreasonableKeywords = [
+                    '冲动', '忍不住', '又买', '本来不想买', '看着买', '顺手',
+                    '打折', '优惠', '限时', '一时爽', '月光', '败家'
+                ];
+
+                const hasUnreasonableKeyword = reason && 
+                    unreasonableKeywords.some(keyword => reason.includes(keyword));
+
+                const monthlyBudget = totalIncome > 0 ? totalIncome * 0.3 : 1000;
+                const isAmountTooLarge = amount > monthlyBudget * 2;
+                const isTotalExpensesTooMuch = expenseRatio > 0.8;
+
+                const unreasonableCategories = ['shopping', 'entertainment'];
+                const isUnreasonableCategory = unreasonableCategories.includes(category) && amount > monthlyBudget * 0.15;
+
+                const isUnreasonable = hasUnreasonableKeyword || isAmountTooLarge || isTotalExpensesTooMuch || isUnreasonableCategory;
+
+                if (isUnreasonable) {
+                    return {
+                        isReasonable: false,
+                        message: '😤 这不合理！',
+                        angerBubble: '这个支出看起来不太理性呢...'
+                    };
+                }
+
+                return {
+                    isReasonable: true,
+                    message: '✅ 可以',
+                    bubble: '这个支出看起来很合理'
+                };
+            }
+
+            forgive() {
+                this.isAngry = false;
+                this.emotionState = 'forgiving';
+                this.mood = Math.min(80, this.mood + 20);
+
+                const messages = [
+                    {
+                        message: '🤝 算了吧',
+                        bubble: '没事啦，我不生气了。每个人都有不理性的时候。下次记住，好好对待我们的账本好吗？'
+                    },
+                    {
+                        message: '💭 我想想',
+                        bubble: '也许我太敏感了。相信你这一次，但下次一定要诚实哦！'
+                    }
+                ];
+
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+                this.saveTrustData();
+                return {
+                    avatar: '🤝',
+                    message: msg.message,
+                    bubble: msg.bubble
+                };
+            }
+
+            clearAnger() {
+                this.isAngry = false;
+                if (this.angerTimer) clearTimeout(this.angerTimer);
+            }
+
+            getStatus() {
+                const phase = this.getTrustPhase();
+                return {
+                    emoji: this.getEmoji(),
+                    state: this.emotionState,
+                    mood: this.mood,
+                    trustLevel: this.trustLevel,
+                    honestyScore: this.honestyScore,
+                    isAngry: this.isAngry,
+                    trustPhase: phase
+                };
+            }
+        }
+
+        // ============ 记账系统 ============
+        class Ledger {
+            constructor() {
+                this.records = this.loadRecords();
+            }
+
+            loadRecords() {
+                const saved = localStorage.getItem('ledger_records');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveRecords() {
+                localStorage.setItem('ledger_records', JSON.stringify(this.records));
+            }
+
+            addRecord(type, amount, category, reason = '') {
+                const record = {
+                    id: Date.now(),
+                    type: type,
+                    amount: parseFloat(amount),
+                    category: category,
+                    reason: reason,
+                    date: new Date().toISOString(),
+                    timestamp: new Date().getTime()
+                };
+
+                this.records.unshift(record);
+                this.saveRecords();
+                return record;
+            }
+
+            deleteRecord(id) {
+                this.records = this.records.filter(r => r.id !== id);
+                this.saveRecords();
+            }
+
+            clearAllRecords() {
+                this.records = [];
+                this.saveRecords();
+            }
+
+            getRecords() {
+                return this.records;
+            }
+
+            getTotalIncome() {
+                return this.records
+                    .filter(r => r.type === 'income')
+                    .reduce((sum, r) => sum + r.amount, 0);
+            }
+
+            getTotalExpense() {
+                return this.records
+                    .filter(r => r.type === 'expense')
+                    .reduce((sum, r) => sum + r.amount, 0);
+            }
+
+            getBalance() {
+                return this.getTotalIncome() - this.getTotalExpense();
+            }
+
+            getRecentRecords(n = 10) {
+                return this.records.slice(0, n);
+            }
+        }
+
+        // 分类映射
+        const categoryNames = {
+            'salary': '💼 工资',
+            'bonus': '🎁 奖金',
+            'investment': '📈 投资收益',
+            'other_income': '🔗 其他收入',
+            'food': '🍔 饮食',
+            'transport': '🚗 交通',
+            'shopping': '🛍️ 购物',
+            'entertainment': '🎬 娱乐',
+            'utilities': '🛁 生活用品',
+            'other_expense': '🔗 其他支出'
+        };
+
+        function getCategoryName(category) {
+            return categoryNames[category] || category;
+        }
+
+        // ============ 应用逻辑 ============
+        class EmotionLedgerApp {
+            constructor() {
+                this.initElements();
+                this.bindEvents();
+                this.updateUI();
+            }
+
+            initElements() {
+                this.emotionAvatar = document.getElementById('emotionAvatar');
+                this.emotionText = document.getElementById('emotionText');
+                this.emotionBubble = document.getElementById('emotionBubble');
+
+                this.totalIncomeEl = document.getElementById('totalIncome');
+                this.totalExpenseEl = document.getElementById('totalExpense');
+                this.balanceEl = document.getElementById('balance');
+
+                this.amountInput = document.getElementById('amount');
+                this.categorySelect = document.getElementById('category');
+                this.reasonInput = document.getElementById('reason');
+
+                this.btnIncome = document.getElementById('btnIncome');
+                this.btnExpense = document.getElementById('btnExpense');
+                this.btnClear = document.getElementById('btnClear');
+
+                this.recordsList = document.getElementById('recordsList');
+                this.trustIndicator = document.getElementById('trustIndicator');
+            }
+
+            bindEvents() {
+                this.btnIncome.addEventListener('click', () => this.handleIncome());
+                this.btnExpense.addEventListener('click', () => this.handleExpense());
+                this.btnClear.addEventListener('click', () => this.handleClear());
+            }
+
+            handleIncome() {
+                const amount = parseFloat(this.amountInput.value);
+                const category = this.categorySelect.value;
+                const reason = this.reasonInput.value;
+
+                if (!this.validateInput(amount)) return;
+
+                ledger.addRecord('income', amount, category, reason);
+
+                const totalIncome = ledger.getTotalIncome();
+                const reaction = emotionSystem.reactToIncome(amount, totalIncome);
+
+                this.showEmotion(reaction);
+                this.updateUI();
+                this.clearForm();
+            }
+
+            handleExpense() {
+                const amount = parseFloat(this.amountInput.value);
+                const category = this.categorySelect.value;
+                const reason = this.reasonInput.value;
+
+                if (!this.validateInput(amount)) return;
+
+                ledger.addRecord('expense', amount, category, reason);
+
+                const totalExpense = ledger.getTotalExpense();
+                const totalIncome = ledger.getTotalIncome();
+                const reaction = emotionSystem.reactToExpense(amount, category, reason, totalExpense, totalIncome);
+
+                this.showEmotion(reaction);
+
+                if (emotionSystem.isAngry) {
+                    setTimeout(() => {
+                        const forgivenReaction = emotionSystem.forgive();
+                        this.showEmotion(forgivenReaction);
+                        setTimeout(() => {
+                            this.updateEmotionDisplay();
+                        }, 2000);
+                    }, 4000);
+                }
+
+                this.updateUI();
+                this.clearForm();
+            }
+
+            handleClear() {
+                if (confirm('确定要清空所有记录吗？这个操作不可撤销！')) {
+                    ledger.clearAllRecords();
+                    emotionSystem.mood = 100;
+                    emotionSystem.trustLevel = 100;
+                    emotionSystem.honestyScore = 100;
+                    emotionSystem.emotionState = 'happy';
+                    emotionSystem.saveTrustData();
+                    this.updateUI();
+                    this.showEmotion({
+                        avatar: '😊',
+                        message: '开始新的记账生涯',
+                        bubble: '清空了所有记录，让我们重新开始吧！我会再次相信你的！'
+                    });
+                }
+            }
+
+            validateInput(amount) {
+                if (!amount || amount <= 0) {
+                    alert('请输入有效的金额！');
+                    return false;
+                }
+                return true;
+            }
+
+            clearForm() {
+                this.amountInput.value = '';
+                this.reasonInput.value = '';
+                this.categorySelect.value = this.categorySelect.options[0].value;
+                this.amountInput.focus();
+            }
+
+            showEmotion(reaction) {
+                this.emotionAvatar.textContent = reaction.avatar;
+                this.emotionText.textContent = reaction.message;
+                this.emotionBubble.textContent = reaction.bubble;
+
+                this.emotionAvatar.style.animation = 'none';
+                setTimeout(() => {
+                    this.emotionAvatar.style.animation = 'bounce 0.6s ease-in-out';
+                }, 10);
+            }
+
+            updateEmotionDisplay() {
+                const status = emotionSystem.getStatus();
+                const phase = status.trustPhase;
+                
+                const messages = {
+                    1: [
+                        '继续加油，我相信你！',
+                        '你正在成为理财高手！',
+                        '博持记账，财富自由就在眼前！',
+                        '每一笔账都是你成长的见证！',
+                        '让我们一起实现财务自由！'
+                    ],
+                    2: [
+                        '嗯...这些记录看起来还不错',
+                        '我有点开始怀疑了，但还是相信你',
+                        '希望你的记录都是真实的',
+                        '我在观察你的行动...',
+                        '诚实最重要'
+                    ],
+                    3: [
+                        '这些记录...真的都是真的吗？',
+                        '我已经不太相信你了',
+                        '你能证明这些吗？',
+                        '我需要看到行动证明',
+                        '骗子的代价很高'
+                    ],
+                    4: [
+                        '我很失望',
+                        '你让我很伤心',
+                        '这就是你对待我的方式吗？',
+                        '我几乎不相信任何东西了',
+                        '修复信任需要很长时间'
+                    ],
+                    5: [
+                        '我们结束了',
+                        '除非你用行动证明，否则我永远不会相信你',
+                        '背叛的伤痛永远不会消散',
+                        '也许我们再也回不到从前',
+                        '重建信任比摧毁它难得多'
+                    ]
+                };
+
+                const messageList = messages[phase.phase];
+                const message = messageList[Math.floor(Math.random() * messageList.length)];
+
+                this.emotionAvatar.textContent = phase.emoji;
+                this.emotionText.textContent = phase.name;
+                this.emotionBubble.textContent = message;
+            }
+
+            updateUI() {
+                const totalIncome = ledger.getTotalIncome();
+                const totalExpense = ledger.getTotalExpense();
+                const balance = ledger.getBalance();
+                const status = emotionSystem.getStatus();
+
+                this.totalIncomeEl.textContent = `¥${totalIncome.toFixed(2)}`;
+                this.totalExpenseEl.textContent = `¥${totalExpense.toFixed(2)}`;
+                this.balanceEl.textContent = `¥${balance.toFixed(2)}`;
+
+                if (balance < 0) {
+                    this.balanceEl.style.color = '#ff6b6b';
+                } else if (balance > 0) {
+                    this.balanceEl.style.color = '#51cf66';
+                } else {
+                    this.balanceEl.style.color = '#6bcfff';
+                }
+
+                this.updateTrustIndicator(status);
+                this.updateRecordsList();
+                this.updateEmotionDisplay();
+            }
+
+            updateTrustIndicator(status) {
+                const trustPercentage = status.trustLevel;
+                const phase = status.trustPhase;
+                
+                this.trustIndicator.innerHTML = `
+                    <div class="trust-info">
+                        <div class="trust-phase">${phase.name} (${Math.round(trustPercentage)}%)</div>
+                        <div class="trust-bars">
+                            <div class="trust-bar">
+                                <div class="trust-fill" style="width: ${trustPercentage}%"></div>
+                            </div>
+                            <div class="honesty-bar">
+                                <div class="honesty-fill" style="width: ${status.honestyScore}%"></div>
+                            </div>
+                        </div>
+                        <div class="trust-labels">
+                            <span>信任度: ${Math.round(status.trustLevel)}%</span>
+                            <span>诚实度: ${Math.round(status.honestyScore)}%</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateRecordsList() {
+                const records = ledger.getRecentRecords(20);
+
+                if (records.length === 0) {
+                    this.recordsList.innerHTML = '<div class="empty-state">还没有任何记录，开始记账吧！</div>';
+                    return;
+                }
+
+                this.recordsList.innerHTML = records.map(record => {
+                    const date = new Date(record.date);
+                    const timeStr = date.toLocaleString('zh-CN', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    const categoryName = getCategoryName(record.category);
+                    const type = record.type === 'income' ? 'income' : 'expense';
+
+                    return `
+                        <div class="record-item ${type}">
+                            <div class="record-info">
+                                <div class="record-category">${categoryName}</div>
+                                <div class="record-time">${timeStr}</div>
+                                ${record.reason ? `<div class="record-reason">"${record.reason}"</div>` : ''}
+                            </div>
+                            <div class="record-amount ${type}">¥${record.amount.toFixed(2)}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // 全局实例
+        const emotionSystem = new EmotionSystem();
+        const ledger = new Ledger();
+
+        // 应用启动
+        window.addEventListener('DOMContentLoaded', () => {
+            new EmotionLedgerApp();
+        });
+    </script>
+</body>
+</html>
